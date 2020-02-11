@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>何しよるん</title>
+</head>
+
+<section class="nanishiyorun-app">
+  <header class="header">
+    <h1>何しよるん</h1>
+    <input class="new-task"
+        autofocus autocomplete="off"
+        placeholder="what have you done?"
+        v-model="newTask"
+        v-on:keyup.enter="addTask">
+    <button v-on:click="addTask()">{{ button.text }}</button>
+    </header>
+    <section class="main">
+      <hot-table :root="root" :settings="hotSettings"></hot-table>
+    </section>
+    <footer class="footer">
+    </footer>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/handsontable@6.2.2/dist/handsontable.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@handsontable/vue/dist/vue-handsontable.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/handsontable@6.2.2/dist/handsontable.full.min.css" rel="stylesheet" media="screen">
+<!-- <script src="./js/nanishiyorun.js"></script>-->
+<script>
+// import HotTable from 'vue-handsontable-official';
+var STORAGE_KEY = 'nanishiyorun-1.0'
+var taskStorage = {
+  fetch: function () {
+    var tasks = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+    tasks.forEach(function (task, index) {
+      task.id = index
+    })
+    taskStorage.uid = tasks.length
+    return tasks
+  },
+  persist: function (tasks) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks))
+  }
+}
+// app Vue instance
+var app = new Vue({
+  components: {
+        HotTable
+  },
+  // app initial state
+  data: {
+    newTask: '',
+    activeTask: '',
+    tasks: taskStorage.fetch(),
+    isActive: false,
+    button: {
+      text: 'start'
+    }
+  },
+  // watch tasks change for localStorage persistence
+  watch: {
+    tasks: {
+      handler: function (tasks) {
+        taskStorage.persist(tasks)
+      },
+      deep: true
+    }
+  },
+
+  // computed properties
+  // http://vuejs.org/guide/computed.html
+  computed: {
+
+  },
+
+  filters: {
+  },
+
+  // methods that implement data logic.
+  // note there's no DOM manipulation here at all.
+  methods: {
+    toggleActive: function () {
+      this.isActive = !this.isActive
+      this.button.text = this.isActive ? "stop" : "start"
+    },
+    addTask: function () {
+      var value = this.newTask && this.newTask.trim()
+      if (!value) {
+        this.newTask = this.activeTask
+        return
+      }
+      if (this.isActive) {
+        this.tasks.forEach(function (task, index) {
+          if (task.task === value && 
+              task.end === '') {
+                task.end = moment().toDate()
+          }
+        })
+      } else {
+        this.tasks.push({
+          id: taskStorage.uid++,
+          task: value,
+          start:moment().toDate(),
+          end:''
+        })
+      }
+      this.activeTask = this.newTask
+      this.toggleActive()
+    }
+  },
+
+  // a custom directive to wait for the DOM to be updated
+  // before focusing on the input field.
+  // http://vuejs.org/guide/custom-directive.html
+  directives: {
+  }
+})
+// mount
+app.$mount('.nanishiyorun-app')
+</script>
+<footer class="info">
+    <p>xxxx</p>
+    <p>Written by masmt418</p>
+</footer>
+</html>
