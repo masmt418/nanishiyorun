@@ -1,0 +1,35 @@
+{
+  "projects": [
+    {
+      "project": "SampleProject1"
+    }
+    ,{
+      "project": "SampleProject2"
+    }
+    ,{
+      "project": "SampleProject3"
+    }
+  ],
+  "breaks": [
+    {
+      "start": "2:30",
+      "end": "3:00"
+    }
+    ,{
+      "start": "7:00",
+      "end": "9:00"
+    }
+    ,{
+      "start": "12:00",
+      "end": "13:00"
+    }
+    ,{
+      "start": "18:00",
+      "end": "18:30"
+    }
+    ,{
+      "start": "22:00",
+      "end": "22:30"
+    }
+  ]
+}
